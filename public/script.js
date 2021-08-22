@@ -5,7 +5,7 @@ const myPeer = new Peer(); // Creating a peer element which represents the curre
 const myVideo = document.createElement('video'); // Create a new video tag to show our video
 myVideo.muted = true; // Mute ourselves on our end so there is no feedback loop
 
-// Access the user's video and audio
+// Access the users video and audio
 navigator.mediaDevices
     .getUserMedia({
         video: true,
