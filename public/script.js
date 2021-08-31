@@ -34,13 +34,16 @@ navigator.mediaDevices
         myVideoStream = stream;
         addVideoStream(myVideo, stream); // Display our video to ourselves
 
-        myPeer.on('call', (call) => {
+        myPeer.on('call', (call, conn) => {
             // When we join someone's room we will receive a call from them
             call.answer(stream); // Stream them our video/audio
             const video = document.createElement('video'); // Create a video tag for them
             call.on('stream', (userVideoStream) => {
                 // When we recieve their stream
                 addVideoStream(video, userVideoStream); // Display their video to ourselves
+            });
+            call.on('close', () => {
+                console.log('conn close event');
             });
         });
 
@@ -52,7 +55,7 @@ navigator.mediaDevices
 
 myPeer.on('open', (id) => {
     // When we first open the app, have us join a room
-    socket.emit('join-room', ROOM_ID, id);
+    socket.emit('join-room', ROOM_ID, id, user);
 });
 
 function connectToNewUser(userId, stream) {
@@ -64,7 +67,7 @@ function connectToNewUser(userId, stream) {
         addVideoStream(video, userVideoStream);
     });
     // If they leave, remove their video
-    call.on('close', () => {
+    conn.on('close', () => {
         video.remove();
     });
 }
@@ -138,7 +141,6 @@ inviteButton.addEventListener('click', (e) => {
 });
 
 socket.on('createMessage', (message, userName) => {
-    console.log(userName);
     messages.innerHTML =
         messages.innerHTML +
         `<div class="message">

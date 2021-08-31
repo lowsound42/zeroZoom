@@ -1,7 +1,11 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*'
+    }
+});
 const { v4: uuidV4 } = require('uuid');
 var port = process.env.PORT || 5000;
 
@@ -18,7 +22,6 @@ app.get('/:roomId', (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on('join-room', (roomId, userId, userName) => {
-        console.log(userId);
         socket.join(roomId);
         socket.broadcast.emit('user-connected', userId);
         socket.on('message', (message) => {
